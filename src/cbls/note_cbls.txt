@@ -1,0 +1,9 @@
+Local Search
+
+1. Xay dung loi giai ban dau
+  1.1 Ngau nhien
+  1.2 Greedy: tai moi buoc chon item i va bin b, xep i vao b
+
+2. Local search:
+  tại mỗi bước chọn k (k  = 1, 2, ..)
+  item và k bins để xếp lại các bin b_j cho item i_j  

@@ -1,0 +1,90 @@
+Constraint Programming with CHOCO
+
+CSP = (X, D, C, f)
+
+X = {X1, X2, .., Xn}
+D: domain of variables
+C: set of constraints
+f: Objective function
+
+int[] x = i
+
+
+===============================================================
+
+Bài toán xếp lịch bảo vệ cao học
+
+n học viện: 1, 2, .., n
+m1 GV trong truongừ HUST 1,2, m1
+m2 GV ngoài trường HUST m1 + 1, m1+ 2, .., m1 + m2
+R  Số phòng 1,2, .., R
+K   Số kíp 1,2, ..., K
+Mỗ HV bảo vệ i có sup(i) là GVHD
+Cần XD: CT (HUST)
+        TK (HUST)
+        UV (NON_HUST)
+        PB1 (HUST)
+        PB2 (NON_HUST)
+        Phòng
+        Kíp
+        
+Ràng buộc:
+- 5 thành viên Hội đông phải khác nhau
+- GVHD không xuất hiện trong 5 thành viện
+- Hai học viên cùng phòng thì khác kíp
+- Mỗi giáo viên tại mỗi kíp không được tham gia quá 1 hội đồng.
+
+
+
+=================================================================
+
+Multi knapsack with minmaxtype constrains
+
+Rang buoc:
+mỗi bin b:
+
+C1: tổng trọng số 1 
+
+
+
+=================================================
+Phân công lịch dạy:
+
+M giáo viện
+N môn học
+Mỗi môn được phân cho 1 giáo viên
+
+Mỗi giáo viên được phân một số môn C(i) là tập con của {1, .., M}, i = 1, 2, ..M
+Mỗi môn học có số tiết là t(i)
+S là là tập 2 môn không thể dược phân cho cùng một giáo viên do 2 môn học này đc xếp cùng 
+tiết trong thời khóa biểu được xác định trước.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
