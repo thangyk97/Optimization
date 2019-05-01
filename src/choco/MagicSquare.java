@@ -1,104 +1,84 @@
 package choco;
 
-import choco.Choco;
-import choco.cp.model.CPModel;
-import choco.cp.solver.CPSolver;
-import choco.kernel.model.Model;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.Solver;
-import oracle.jrockit.jfr.tools.ConCatRepository;
+import org.chocosolver.solver.Model;
+import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.variables.IntVar;
 
 public class MagicSquare {
-	
+	Model model = new Model();
+	IntVar[][] x;
 	int n;
-	int M;
-	
-	Model m = new CPModel();
-	IntegerVariable[][] cells;
-	
-	public MagicSquare(int n) {
-		this.n = n;
-		this.M = n*(n*n + 1) / 2;
-		this.cells = new IntegerVariable[n][n];
-	}
-	
-	/**
-	 * 
-	 */
-	public void createModel() {
-		
-		for (int i=0; i < n; i ++) {
-			for (int j=0; j < n; j++) {
-				this.cells[i][j] = Choco.makeIntVar("cell" + j, 1, n*n);
-				this.m.addVariable(this.cells[i][j]);
+	int m;
+
+	public void stateModel() {
+		this.x = new IntVar[this.n][this.n];
+		for (int i = 0; i < this.n; i++) {
+			for (int j = 0; j < this.n; j++) {
+				this.x[i][j] = this.model.intVar("x_" + i + j, 1, this.n * this.n);
 			}
 		}
-		
-		// Constraint over rows
-		Constraint[] rows = new Constraint[n];
-		for (int i = 0; i < n; i++) {
-			rows[i] = Choco.eq(Choco.sum(this.cells[i]), M);
+
+		// Add constraints
+		// row
+		for (int i = 0; i < this.n; i++) {
+			this.model.sum(this.x[i], "=", this.m).post();
 		}
-		this.m.addConstraints(rows);
-		
-		// Constraint over columns
-		IntegerVariable[][] cellsDual = new IntegerVariable[n][n];
-		for (int i = 0; i < n; i ++) {
-			for (int j = 0; j  < n; j ++) {
-				cellsDual[i][j] = cells[j][i];
+		// column
+		for (int i = 0; i < this.n; i++) {
+			IntVar[] temp = new IntVar[this.n];
+			for (int j = 0; j < this.n; j++) {
+				temp[j] = this.x[i][j];
+			}
+			this.model.sum(temp, "=", this.m).post();
+		}
+		// diagonal
+		IntVar[][] diagonals = new IntVar[2][n];
+		for (int i = 0; i < this.n; i++) {
+			diagonals[0][i] = this.x[i][i];
+			diagonals[1][i] = this.x[i][this.n - 1 - i];
+		}
+		this.model.sum(diagonals[0], "=", this.m).post();
+		this.model.sum(diagonals[1], "=", this.m).post();
+
+		// unique
+		IntVar[] temp = new IntVar[this.n * this.n];
+		for (int i = 0; i < this.n; i++) {
+			for (int j = 0; j < this.n; j++) {
+				temp[i * this.n + j] = this.x[i][j];
 			}
 		}
-		Constraint[] cols = new Constraint[n];
-		for (int i = 0; i < n; i++) {
-			cols[i] = Choco.eq(Choco.sum(cellsDual[i]), M);
-		}
-		this.m.addConstraints(cols);
-		// Constraint over diagonal
-		IntegerVariable[][] diags = new IntegerVariable[2][n];
-		for (int i = 0; i < n; i++) {
-			diags[0][i] = cells[i][i];
-			diags[1][i] = cells[i][n-1-i];
-		}
-		this.m.addConstraint(Choco.eq(Choco.sum(diags[0]), M));
-		this.m.addConstraint(Choco.eq(Choco.sum(diags[1]), M));
-		
-		// All cells are difference from each other
-		IntegerVariable[] allVar = new IntegerVariable[n*n];
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				allVar[i*n + j] = cells[i][j];
-			}
-		}
-		this.m.addConstraints(Choco.allDifferent(allVar));
-		
+		this.model.allDifferent(temp).post();
+
 		// Logger
 		System.out.println("Create model successfully !");
 	}
-	
+
 	/**
 	 * 
 	 */
 	public void solve() {
-		Solver s = new CPSolver();
-		s.read(this.m);
-		System.out.println("Solving ...");
-		s.solve();
-		
-		// Print variables
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				System.out.print(s.getVar(cells[i][j]).getVal() + " ");
+		Solver solver = this.model.getSolver();
+		if(solver.solve()){
+			for (int i = 0; i < this.n; i++) {
+				for (int j = 0; j < this.n; j++) {
+					System.out.print(this.x[i][j].getValue() + "\t");
+				}
+				System.out.println();
+				System.out.println();
 			}
-			System.out.println();
+		} else {
+			System.out.println("The solver has proved the problem has no solution");
 		}
-		
 	}
-	
+
+	public MagicSquare(int n) {
+		this.n = n;
+		this.m = this.n * (this.n * this.n + 1) / 2;
+	}
 
 	public static void main(String[] args) {
-		MagicSquare magicSquare = new MagicSquare(5);
-		magicSquare.createModel();
+		MagicSquare magicSquare = new MagicSquare(11);
+		magicSquare.stateModel();
 		magicSquare.solve();
 	}
 

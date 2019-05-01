@@ -6,6 +6,7 @@ public class MinMaxTypeMultiKnapsackInputBin {
 	private double p;
 	private int t;
 	private int r;
+	
 	public double getCapacity() {
 		return capacity;
 	}

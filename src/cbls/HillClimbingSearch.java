@@ -39,6 +39,7 @@ public class HillClimbingSearch {
 			AssignMove m = candidates.get(idx);
 			x[m.i].setValuePropagate(m.v);
 			
+			// Log
 			System.out.println("step " + it + ", violation = " + S.violations());
 			it ++;
 		}

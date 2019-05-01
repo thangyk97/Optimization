@@ -55,7 +55,7 @@ public class MinMaxTypeMultiKnapsackInput {
 			ex.printStackTrace();
 		}
 	}
-	public MinMaxTypeMultiKnapsackInput loadFromFile(String fn){
+	public static MinMaxTypeMultiKnapsackInput loadFromFile(String fn){
 		try{
 			Gson gson = new Gson();
 			Reader reader = new FileReader(fn);

@@ -1,13 +1,7 @@
 package cbls;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-
-import choco.kernel.model.constraints.Constraint;
 import localsearch.constraints.basic.LessOrEqual;
-import localsearch.constraints.basic.LessThan;
 import localsearch.constraints.basic.NotEqual;
 import localsearch.functions.conditionalsum.ConditionalSum;
 import localsearch.model.ConstraintSystem;
