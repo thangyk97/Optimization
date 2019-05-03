@@ -3,10 +3,13 @@ package mini_project;
 import java.util.HashSet;
 import java.util.Set;
 
+import localsearch.constraints.basic.Implicate;
 import localsearch.constraints.basic.LessOrEqual;
 import localsearch.functions.conditionalsum.ConditionalSum;
 import localsearch.functions.sum.Sum;
 import localsearch.model.ConstraintSystem;
+import localsearch.model.IConstraint;
+import localsearch.model.IFunction;
 import localsearch.model.LocalSearchManager;
 import localsearch.model.VarIntLS;
 import localsearch.search.TabuSearch;
@@ -36,8 +39,8 @@ public class MultiKnapsack {
 		this.numBins = input.getBins().length;
 		System.out.println("the number of items : " + this.numItems);
 		System.out.println("the number of bins :  " + this.numBins);
-		this.numBins = 100;
-		this.numItems = 1000;
+//		this.numBins = 100;
+//		this.numItems = 1000;
 	}
 
 	public void stateModel() {
@@ -78,12 +81,14 @@ public class MultiKnapsack {
 			itemWeight[i] = (int) this.input.getItems()[i].getW()*this.alpha;
 		}
 		for (int i = 0; i < this.numBins; i++) {
-			S.post(new LessOrEqual((int) (this.input.getBins()[i].getMinLoad()*this.alpha),
-									new ConditionalSum(this.X[i], itemWeight, 1))
-				);
 			S.post(new LessOrEqual(new ConditionalSum(this.X[i], itemWeight, 1),
-									(int) (this.input.getBins()[i].getCapacity()*this.alpha))
+					(int) (this.input.getBins()[i].getCapacity()*this.alpha))
 				);
+			IConstraint temp1 = new LessOrEqual(1, new ConditionalSum(this.X[i], itemWeight, 1));
+			IConstraint temp2 =  new LessOrEqual(
+										(int) (this.input.getBins()[i].getMinLoad()*this.alpha),
+										new ConditionalSum(this.X[i], itemWeight, 1));
+			S.post(new Implicate(temp1 , temp2));
 		}
 		
 		// 2
@@ -119,15 +124,20 @@ public class MultiKnapsack {
 				temp[j] = this.X[j][i];
 			}
 			S.post(new LessOrEqual(new Sum(temp), 1));
-//			S.post(new LessOrEqual(1, new Sum(temp)));
+			S.post(new LessOrEqual(1, new Sum(temp)));
 		}
+		
 		
 		this.mgr.close();
 	}
 	
 	public void search() {
 		TabuSearch tabu = new TabuSearch();
-		tabu.search(this.S, 100, 1000, 500, 100);
+		int tabulen = 100;
+		int maxIter = 5000;
+		int maxTime = 1000;
+		int maxStable = 100;
+		tabu.search(this.S, tabulen, maxTime, maxIter, maxStable);
 	}
 	
 	private int findNumTypeItem(MinMaxTypeMultiKnapsackInputItem[] items) {
@@ -226,7 +236,7 @@ public class MultiKnapsack {
 	}
 	
 	public static void main(String[] args) {
-		MultiKnapsack s = new MultiKnapsack("/home/thangnd/git/java/Optimization/data/MinMaxTypeMultiKnapsackInput-3000.json",
+		MultiKnapsack s = new MultiKnapsack("/home/thangnd/git/java/Optimization/data/test.json",
 											10000);
 		System.out.println("Load data okay !");
 		s.stateModel();
@@ -234,6 +244,5 @@ public class MultiKnapsack {
 		System.out.println("Searching .......");
 		s.search();
 		s.showResult();
-		
 	}
 }
